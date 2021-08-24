@@ -165,7 +165,7 @@ public class Main extends JFrame{
 						if(rs.next()){
 							if(rs.getString("password").equals(pass) && comboBox.getSelectedItem().equals(rs.getString("type"))) {
 								JOptionPane.showMessageDialog(null, "Login Successful.");
-								AdminPanel adm = new AdminPanel(u, pass);
+								AdminPanel adm = new AdminPanel(u, pass, rs.getString("type"));
 								adm.setVisible(true);
 								setVisible(false);
 								

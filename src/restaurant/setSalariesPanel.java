@@ -34,35 +34,20 @@ public class setSalariesPanel {
 	private int w = 690;
 	private int h = 550;
 	private JPanel panel;
-	private JTextField gmField;
-	private JTextField amField;
-	private JTextField chefField;
-	private JTextField achefField;
-	private JTextField kmField;
+	private JTextField gmField, amField, chefField, achefField, kmField;
 	private Connection con = null;
 	private PreparedStatement pst = null;
 	private ResultSet rs = null;
-	private JTextField sgField;
-	private JTextField dgField;
-	private JTextField dwField;
-	private JTextField serverField;
+	private JTextField sgField, dgField, dwField, serverField;
 	private String gmS, amS, cS, acS, kmS, sS, dwS, dgS, sgS;
 	private int gmi, ami, ci, aci, kmi, si, dwi, dgi, sgi;
-	private String globPass;
+	private String globPass, globType;
 	private JPanel checkPanel;
 	private JPasswordField passwordField;
 	private JLabel lblNewLabel;
-	private JLabel gmLabel;
-	private JLabel amLabel;
-	private JLabel chefLabell;
-	private JLabel achefLabel;
-	private JLabel kmLabel;
-	private button btnReset;
-	private button btnUpdate;
-	private JLabel serverLabell;
-	private JLabel dwLabell;
-	private JLabel dgLabell;
-	private JLabel sgLabell;
+	private JLabel gmLabel, amLabel, chefLabell, achefLabel, kmLabel;
+	private button btnReset, btnUpdate;
+	private JLabel serverLabell, dwLabell, dgLabell, sgLabell;
 	/**
 	 * Launch the application.
 	 */
@@ -70,7 +55,7 @@ public class setSalariesPanel {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					setSalariesPanel window = new setSalariesPanel("a");
+					setSalariesPanel window = new setSalariesPanel("a", "a");
 					window.frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -82,8 +67,9 @@ public class setSalariesPanel {
 	/**
 	 * Create the application.
 	 */
-	public setSalariesPanel(String s) {
+	public setSalariesPanel(String s, String t) {
 		globPass = s;
+		globType = t;
 		gmS = amS = cS = acS = kmS = sS = dwS = dgS = sgS = null;
 		gmi = ami = ci = aci = kmi = si = dwi = dgi = sgi = -1;
 		initialize();
@@ -212,6 +198,9 @@ public class setSalariesPanel {
 		gmField.setFont(new Font("SansSerif", Font.PLAIN, 16));
 		gmField.setBorder(new MatteBorder(1, 1, 1, 1, Color.BLACK));
 		gmField.setBounds(195, 80, 258, 25);
+		if(!globType.equals("Owner")) {
+			gmField.setEnabled(false);
+			gmField.setDisabledTextColor(Color.BLACK);}
 		panel.add(gmField);
 		gmField.setColumns(10);
 		

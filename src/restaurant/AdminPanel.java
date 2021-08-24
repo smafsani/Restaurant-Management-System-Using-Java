@@ -19,15 +19,16 @@ import javax.swing.JLabel;
 public class AdminPanel extends JFrame{
 
 	public int x = 150, y = 40;
-	public button foodOrder, addProduct, addUser, addEmployee, products, usersLabel, ordersBtn, salaries;
+	public button foodOrder, addProduct, addUser, addEmployee, products, usersLabel, ordersBtn, profileBtn;
 	public Color col1 = new Color(0, 127, 224);
 	public Color col2 = new Color(0, 70, 123);
 	public JPanel containerPanel;
 	private JLabel lblNewLabel;
-	private String globalUsername, globalPassword;
-	public AdminPanel(String s1, String s2) {
+	private String globalUsername, globalPassword, globalType;
+	public AdminPanel(String s1, String s2, String s3) {
 		globalUsername = s1;
 		globalPassword = s2;
+		globalType = s3;
 		getContentPane().setLayout(null);
 		setSize(910,650);
 		setLocationRelativeTo(null);
@@ -156,7 +157,7 @@ public class AdminPanel extends JFrame{
 				addEmployee.setSize(x+10, y);
 				setButtons("ae");
 				
-				JPanel pan = new addEmployeePanel().returnPanel();
+				JPanel pan = new addEmployeePanel(globalPassword, globalType).returnPanel();
 				pan.setBounds(10, 10, 690, 500);
 				clearContainerPanel();
 				containerPanel.add(pan);
@@ -237,21 +238,21 @@ public class AdminPanel extends JFrame{
 		});
 		barPanel.add(ordersBtn);
 		
-		salaries = new button("Salaries", col1, col2);
-		salaries.setBorder(new MatteBorder(2, 2, 2, 2, Color.WHITE));
-		salaries.setHorizontalAlignment(SwingConstants.CENTER);
-		salaries.setForeground(Color.WHITE);
-		salaries.setFont(new Font("SansSerif", Font.BOLD, 16));
-		salaries.setBounds(4, 470, 150, 40);
-		salaries.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-		salaries.addMouseListener(new MouseAdapter() {
+		profileBtn = new button("Profile", col1, col2);
+		profileBtn.setBorder(new MatteBorder(2, 2, 2, 2, Color.WHITE));
+		profileBtn.setHorizontalAlignment(SwingConstants.CENTER);
+		profileBtn.setForeground(Color.WHITE);
+		profileBtn.setFont(new Font("SansSerif", Font.BOLD, 16));
+		profileBtn.setBounds(4, 470, 150, 40);
+		profileBtn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+		profileBtn.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				salaries.hover(new Color(1, 57, 99), new Color(1, 57, 99));
-				salaries.setSize(x+10, y);
-				setButtons("sal");
+				profileBtn.hover(new Color(1, 57, 99), new Color(1, 57, 99));
+				profileBtn.setSize(x+10, y);
+				setButtons("pro");
 				
-				JPanel pan = new setSalariesPanel(globalPassword).returnPanel();
+				JPanel pan = new ProfilePanel(globalUsername, globalPassword).returnPanel();
 				pan.setBounds(10, 10, 690, 500);
 				clearContainerPanel();
 				containerPanel.add(pan);
@@ -259,7 +260,7 @@ public class AdminPanel extends JFrame{
 			}
 			
 		});
-		barPanel.add(salaries);
+		barPanel.add(profileBtn);
 		
 		containerPanel = new JPanel();
 		containerPanel.setBackground(new Color(1, 57, 99));
@@ -307,9 +308,9 @@ public class AdminPanel extends JFrame{
 			ordersBtn.setSize(x, y);
 			ordersBtn.hover(col1, col2);
 		}
-		if(!s.equals("sal")) {
-			salaries.setSize(x, y);
-			salaries.hover(col1, col2);
+		if(!s.equals("pro")) {
+			profileBtn.setSize(x, y);
+			profileBtn.hover(col1, col2);
 		}
 		
 	}
@@ -325,7 +326,7 @@ public class AdminPanel extends JFrame{
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					new AdminPanel("", "").setVisible(true);
+					new AdminPanel("", "", "").setVisible(true);
 				}catch (Exception e) {
 				e.printStackTrace();}
 				

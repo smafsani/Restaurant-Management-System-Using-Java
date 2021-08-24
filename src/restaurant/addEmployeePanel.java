@@ -55,7 +55,8 @@ public class addEmployeePanel {
 	private JCheckBox gmCheckBox, amCheckBox, chefCheckBox, achefCheckBox, kmCheckBox;
 	private JCheckBox serverCheckBox, dwCheckBox, dgCheckBox, sgCheckBox;
 	private JTextArea errorMessageArea;
-	private JButton btnBack;
+	private String globalPassword="", globalType="";
+	private JLabel labelBack;
 	/**
 	 * Launch the application.
 	 */
@@ -63,7 +64,7 @@ public class addEmployeePanel {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					addEmployeePanel window = new addEmployeePanel();
+					addEmployeePanel window = new addEmployeePanel("a", "a");
 					window.frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -75,7 +76,9 @@ public class addEmployeePanel {
 	/**
 	 * Create the application.
 	 */
-	public addEmployeePanel() {
+	public addEmployeePanel(String s1, String s2) {
+		globalPassword = s1;
+		globalType = s2;
 		countSalary = 0.0;
 		gmd = amd = cd = acd = kmd = sd = dwd = dgd = sgd = -1.0;
 		initialize();
@@ -112,7 +115,7 @@ public class addEmployeePanel {
 		
 		JLabel editBtn = new JLabel("Edit Employees");
 		editBtn.setBounds(580, 47, 100, 25);
-		editBtn.setFont(new Font("Serif", Font.BOLD, 14));
+		editBtn.setFont(new Font("SansSerif", Font.BOLD, 12));
 		editBtn.setHorizontalAlignment(SwingConstants.CENTER);
 		editBtn.setForeground(Color.BLACK);
 		editBtn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
@@ -122,10 +125,29 @@ public class addEmployeePanel {
 				panel2 = new editEmployees().returnPanel();
 				panel2.setLocation(0, 0);
 				frame.getContentPane().add(panel2);
-				panel2.add(btnBack);
+				labelBack.setLocation(5, 425);
+				panel2.add(labelBack);
 			}
 		});
 		panel.add(editBtn);
+		
+		JLabel salaryBtn = new JLabel("Set Salaries");
+		salaryBtn.setBounds(490, 47, 90, 25);
+		salaryBtn.setFont(new Font("SansSerif", Font.BOLD, 12));
+		salaryBtn.setHorizontalAlignment(SwingConstants.CENTER);
+		salaryBtn.setForeground(Color.BLACK);
+		salaryBtn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+		salaryBtn.addMouseListener(new MouseAdapter() {
+			public void mouseClicked(MouseEvent e) {
+				panel.setVisible(false);
+				panel2 = new setSalariesPanel(globalPassword, globalType).returnPanel();
+				panel2.setLocation(0, 0);
+				frame.getContentPane().add(panel2);
+				labelBack.setLocation(5, 46);
+				panel2.add(labelBack);
+			}
+		});
+		panel.add(salaryBtn);
 		
 		
 		JLabel lblNewLab_1 = new JLabel("Employee Name:");
@@ -237,7 +259,6 @@ public class addEmployeePanel {
 			public void mouseClicked(MouseEvent e) {
 				errorMessageArea.setVisible(false);
 				String name="", addr="", mno="", nid="", sal="";
-				int x;
 				double y;
 				getTypes();
 				name = enField.getText();
@@ -247,7 +268,6 @@ public class addEmployeePanel {
 				sal = esField.getText();
 				boolean bool = checkThese(name, nid, addr, mno, sal);
 				if(bool) {
-					x = Integer.parseInt(nid);
 					y = Double.parseDouble(sal);
 					try {
 						pst = con.prepareStatement("INSERT INTO employees (Name, NID, Address, Mobile, Salary, Type)"
@@ -424,21 +444,20 @@ public class addEmployeePanel {
 		panel.add(errorMessageArea);
 		
 		
-		btnBack = new JButton("Back");
-		btnBack.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
+		labelBack = new JLabel("Back");
+		labelBack.addMouseListener(new MouseAdapter() {
+			public void mouseClicked(MouseEvent e) {
 				panel2.setVisible(false);
 				panel.setVisible(true);
 				clearFields();
 			}
 		});
-		btnBack.setBounds(5, 425, 75, 23);
-		btnBack.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-		btnBack.setBackground(new Color(102, 102, 203));
-		btnBack.setForeground(Color.WHITE);
-		btnBack.setFocusPainted(false);
-		btnBack.setHorizontalAlignment(SwingConstants.CENTER);
-		btnBack.setFont(new Font("SansSerif", Font.BOLD, 14));
+		labelBack.setBounds(5, 425, 75, 23);
+		labelBack.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+		labelBack.setBackground(new Color(30, 74, 123));
+		labelBack.setForeground(Color.BLACK);
+		labelBack.setHorizontalAlignment(SwingConstants.CENTER);
+		labelBack.setFont(new Font("SansSerif", Font.BOLD, 14));
 		
 	}
 	
@@ -501,9 +520,8 @@ public class addEmployeePanel {
 			errorMessageArea.setText("Missing information. Please fill up all fields and try again.");
 			errorMessageArea.setVisible(true);
 			return false;}
-		double d;
 		try {
-			d = Double.parseDouble(sal);
+			Double.parseDouble(sal);
 		}catch(Exception e) {
 			errorMessageArea.setText("Invalid salary input. Please check and try again");
 			errorMessageArea.setVisible(true);
@@ -565,7 +583,7 @@ class editEmployees{
 	private JScrollPane scrollPane;
 	private DefaultTableModel model;
 	private JTable table;
-	private button btnUpdate,btnDelete, btnBack;
+	private button btnUpdate,btnDelete;
 	PreparedStatement pst = null;
 	Connection con = null;
 	ResultSet rs = null;
@@ -645,7 +663,7 @@ class editEmployees{
 		});
 		searchBtn.setBounds(225, 6, 75, 23);
 		searchBtn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-		searchBtn.setBackground(new Color(102, 102, 153));
+		searchBtn.setBackground(new Color(50, 74, 123));
 		searchBtn.setForeground(Color.WHITE);
 		searchBtn.setFocusPainted(false);
 		searchBtn.setHorizontalAlignment(SwingConstants.CENTER);
@@ -665,7 +683,7 @@ class editEmployees{
 		});
 		allBtn.setBounds(610, 6, 75, 23);
 		allBtn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-		allBtn.setBackground(new Color(102, 102, 153));
+		allBtn.setBackground(new Color(50, 74, 123));
 		allBtn.setForeground(Color.WHITE);
 		allBtn.setFocusPainted(false);
 		allBtn.setHorizontalAlignment(SwingConstants.CENTER);
@@ -711,7 +729,7 @@ class editEmployees{
 		
 		setTable();
 		
-		btnUpdate = new button("Update",new Color(135, 135, 215),new Color(74, 74, 123));
+		btnUpdate = new button("Update",new Color(100, 135, 215),new Color(30, 74, 123));
 		btnUpdate.setBorder(new MatteBorder(1,1,1,1, new Color(102, 51, 255)));
 		btnUpdate.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 		btnUpdate.addMouseListener(new MouseAdapter() {
@@ -721,7 +739,7 @@ class editEmployees{
 			}
 			@Override
 			public void mouseReleased(MouseEvent e) {
-				btnUpdate.hover(new Color(135, 135, 215),new Color(74, 74, 123));
+				btnUpdate.hover(new Color(100, 135, 215),new Color(30, 74, 123));
 			}
 			@Override
 			public void mouseClicked(MouseEvent e) {
@@ -736,7 +754,7 @@ class editEmployees{
 		btnUpdate.setBounds(500, 425, 80, 25);
 		panel.add(btnUpdate);
 		
-		btnDelete = new button("Delete",new Color(135, 135, 215),new Color(74, 74, 123));
+		btnDelete = new button("Delete",new Color(100, 135, 215),new Color(30, 74, 123));
 		btnDelete.setBorder(new MatteBorder(1,1,1,1, new Color(102, 51, 255)));
 		btnDelete.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 		btnDelete.addMouseListener(new MouseAdapter() {
@@ -746,7 +764,7 @@ class editEmployees{
 			}
 			@Override
 			public void mouseReleased(MouseEvent e) {
-				btnDelete.hover(new Color(135, 135, 215),new Color(74, 74, 123));
+				btnDelete.hover(new Color(100, 135, 215),new Color(30, 74, 123));
 			}
 			@Override
 			public void mouseClicked(MouseEvent e) {

@@ -133,7 +133,10 @@ public class CustomerPanel extends JFrame{
 				profile.setSize(x+10, y);
 				setButtons("pro");
 				
+				JPanel pan = new ProfilePanel(globalUsername, globalPassword).returnPanel();
+				pan.setBounds(10, 10, 690, 500);
 				clearContainerPanel();
+				containerPanel.add(pan);
 			}
 			
 		});
