@@ -179,7 +179,7 @@ public class usersPanel {
 		lblNewLabel.setHorizontalAlignment(SwingConstants.CENTER);
 		lblNewLabel.setForeground(new Color(255, 255, 255));
 		lblNewLabel.setOpaque(true);
-		lblNewLabel.setBackground(new Color(102, 102, 204));
+		lblNewLabel.setBackground(new Color(185, 0, 185));
 		lblNewLabel.setBounds(1, 1, 688, 46);
 		panel.add(lblNewLabel);
 		
@@ -229,7 +229,7 @@ public class usersPanel {
 		});
 		searchBtn.setBounds(225, 6, 75, 23);
 		searchBtn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-		searchBtn.setBackground(new Color(102, 102, 153));
+		searchBtn.setBackground(new Color(117, 0, 117));
 		searchBtn.setForeground(Color.WHITE);
 		searchBtn.setFocusPainted(false);
 		searchBtn.setHorizontalAlignment(SwingConstants.CENTER);
@@ -249,7 +249,7 @@ public class usersPanel {
 		});
 		allBtn.setBounds(610, 6, 75, 23);
 		allBtn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-		allBtn.setBackground(new Color(102, 102, 153));
+		allBtn.setBackground(new Color(117, 0, 117));
 		allBtn.setForeground(Color.WHITE);
 		allBtn.setFocusPainted(false);
 		allBtn.setHorizontalAlignment(SwingConstants.CENTER);
@@ -289,17 +289,17 @@ public class usersPanel {
 		table.getColumnModel().getColumn(2).setPreferredWidth(140);
 		setTable();
 		
-		btnUpdate = new button("Update",new Color(135, 135, 215),new Color(74, 74, 123));
+		btnUpdate = new button("Update",new Color(255, 0, 255),new Color(127, 0, 127));
 		btnUpdate.setBorder(new MatteBorder(1,1,1,1, new Color(102, 51, 255)));
 		btnUpdate.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 		btnUpdate.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mousePressed(MouseEvent e) {
-				btnUpdate.hover(new Color(48, 48, 81), new Color(48, 48, 81));
+				btnUpdate.hover(new Color(75, 0, 75), new Color(75, 0, 75));
 			}
 			@Override
 			public void mouseReleased(MouseEvent e) {
-				btnUpdate.hover(new Color(135, 135, 215),new Color(74, 74, 123));
+				btnUpdate.hover(new Color(255, 0, 255),new Color(127, 0, 127));
 			}
 			@Override
 			public void mouseClicked(MouseEvent e) {
@@ -314,17 +314,17 @@ public class usersPanel {
 		btnUpdate.setBounds(500, 425, 80, 25);
 		panel.add(btnUpdate);
 		
-		btnDelete = new button("Delete",new Color(135, 135, 215),new Color(74, 74, 123));
+		btnDelete = new button("Delete",new Color(255, 0, 255),new Color(127, 0, 127));
 		btnDelete.setBorder(new MatteBorder(1,1,1,1, new Color(102, 51, 255)));
 		btnDelete.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 		btnDelete.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mousePressed(MouseEvent e) {
-				btnDelete.hover(new Color(48, 48, 81), new Color(48, 48, 81));
+				btnDelete.hover(new Color(75, 0, 75), new Color(75, 0, 75));
 			}
 			@Override
 			public void mouseReleased(MouseEvent e) {
-				btnDelete.hover(new Color(135, 135, 215),new Color(74, 74, 123));
+				btnDelete.hover(new Color(255, 0, 255),new Color(127, 0, 127));
 			}
 			@Override
 			public void mouseClicked(MouseEvent e) {

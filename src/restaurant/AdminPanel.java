@@ -326,7 +326,7 @@ public class AdminPanel extends JFrame{
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					new AdminPanel("", "", "").setVisible(true);
+					new AdminPanel("admin", "password", "Admin").setVisible(true);
 				}catch (Exception e) {
 				e.printStackTrace();}
 				

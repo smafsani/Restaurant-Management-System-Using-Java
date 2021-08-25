@@ -98,7 +98,7 @@ public class productsPanel {
 		lblNewLabel.setHorizontalAlignment(SwingConstants.CENTER);
 		lblNewLabel.setForeground(new Color(255, 255, 255));
 		lblNewLabel.setOpaque(true);
-		lblNewLabel.setBackground(new Color(102, 102, 204));
+		lblNewLabel.setBackground(new Color(64, 64, 202));
 		lblNewLabel.setBounds(1, 1, 688, 46);
 		panel.add(lblNewLabel);
 		
@@ -148,7 +148,7 @@ public class productsPanel {
 		});
 		searchBtn.setBounds(225, 6, 75, 23);
 		searchBtn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-		searchBtn.setBackground(new Color(102, 102, 153));
+		searchBtn.setBackground(new Color(64, 64, 202));
 		searchBtn.setForeground(Color.WHITE);
 		searchBtn.setFocusPainted(false);
 		searchBtn.setHorizontalAlignment(SwingConstants.CENTER);
@@ -168,7 +168,7 @@ public class productsPanel {
 		});
 		allBtn.setBounds(610, 6, 75, 23);
 		allBtn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-		allBtn.setBackground(new Color(102, 102, 153));
+		allBtn.setBackground(new Color(64, 64, 202));
 		allBtn.setForeground(Color.WHITE);
 		allBtn.setFocusPainted(false);
 		allBtn.setHorizontalAlignment(SwingConstants.CENTER);
@@ -193,7 +193,7 @@ public class productsPanel {
 		
 		table = new JTable(model);
 		table.setRowHeight(25);
-		table.getTableHeader().setBackground(Color.BLACK);
+		table.getTableHeader().setBackground(new Color(64, 64, 202));
 		table.getTableHeader().setForeground(Color.WHITE);
 		table.getTableHeader().setFont(new Font("SansSerif", Font.BOLD, 12));
 		table.setFont(new Font("SansSerif", Font.PLAIN, 12));
@@ -211,17 +211,17 @@ public class productsPanel {
 		table.getColumnModel().getColumn(1).setPreferredWidth(120);
 		setTable();
 		
-		btnUpdate = new button("Update",new Color(135, 135, 215),new Color(74, 74, 123));
+		btnUpdate = new button("Update",new Color(93, 93, 251),new Color(37, 37, 126));
 		btnUpdate.setBorder(new MatteBorder(1,1,1,1, new Color(102, 51, 255)));
 		btnUpdate.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 		btnUpdate.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mousePressed(MouseEvent e) {
-				btnUpdate.hover(new Color(48, 48, 81), new Color(48, 48, 81));
+				btnUpdate.hover(new Color(38, 38, 128), new Color(38, 38, 128));
 			}
 			@Override
 			public void mouseReleased(MouseEvent e) {
-				btnUpdate.hover(new Color(135, 135, 215),new Color(74, 74, 123));
+				btnUpdate.hover(new Color(93, 93, 251),new Color(37, 37, 126));
 			}
 			@Override
 			public void mouseClicked(MouseEvent e) {
@@ -236,17 +236,17 @@ public class productsPanel {
 		btnUpdate.setBounds(500, 425, 80, 25);
 		panel.add(btnUpdate);
 		
-		btnDelete = new button("Delete",new Color(135, 135, 215),new Color(74, 74, 123));
+		btnDelete = new button("Delete",new Color(93, 93, 251),new Color(37, 37, 126));
 		btnDelete.setBorder(new MatteBorder(1,1,1,1, new Color(102, 51, 255)));
 		btnDelete.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 		btnDelete.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mousePressed(MouseEvent e) {
-				btnDelete.hover(new Color(48, 48, 81), new Color(48, 48, 81));
+				btnDelete.hover(new Color(38, 38, 128), new Color(38, 38, 128));
 			}
 			@Override
 			public void mouseReleased(MouseEvent e) {
-				btnDelete.hover(new Color(135, 135, 215),new Color(74, 74, 123));
+				btnDelete.hover(new Color(93, 93, 251),new Color(37, 37, 126));
 			}
 			@Override
 			public void mouseClicked(MouseEvent e) {

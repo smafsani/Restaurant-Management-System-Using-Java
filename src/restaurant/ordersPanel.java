@@ -93,7 +93,7 @@ public class ordersPanel {
 		lblNewLabel.setHorizontalAlignment(SwingConstants.CENTER);
 		lblNewLabel.setForeground(new Color(255, 255, 255));
 		lblNewLabel.setOpaque(true);
-		lblNewLabel.setBackground(new Color(0, 0, 102));
+		lblNewLabel.setBackground(new Color(0, 152, 240));
 		lblNewLabel.setBounds(1, 1, 688, 46);
 		panel.add(lblNewLabel);
 		
@@ -143,7 +143,7 @@ public class ordersPanel {
 		});
 		searchBtn.setBounds(225, 6, 75, 23);
 		searchBtn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-		searchBtn.setBackground(new Color(0, 0, 133));
+		searchBtn.setBackground(new Color(0, 133, 209));
 		searchBtn.setForeground(Color.WHITE);
 		searchBtn.setFocusPainted(false);
 		searchBtn.setHorizontalAlignment(SwingConstants.CENTER);
@@ -163,7 +163,7 @@ public class ordersPanel {
 		});
 		allBtn.setBounds(610, 6, 75, 23);
 		allBtn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-		allBtn.setBackground(new Color(0, 0, 133));
+		allBtn.setBackground(new Color(0, 133, 209));
 		allBtn.setForeground(Color.WHITE);
 		allBtn.setFocusPainted(false);
 		allBtn.setHorizontalAlignment(SwingConstants.CENTER);
@@ -188,7 +188,7 @@ public class ordersPanel {
 		
 		table = new JTable(model);
 		table.setRowHeight(25);
-		table.getTableHeader().setBackground(Color.BLACK);
+		table.getTableHeader().setBackground(new Color(0, 133, 209));
 		table.getTableHeader().setForeground(Color.WHITE);
 		table.getTableHeader().setFont(new Font("SansSerif", Font.BOLD, 12));
 		table.setFont(new Font("SansSerif", Font.PLAIN, 12));
@@ -201,17 +201,17 @@ public class ordersPanel {
 		scrollPane.setViewportView(table);
 		setTable();
 		
-		btnOrder = new button("Order",new Color(0, 0, 122),new Color(0, 0, 52));
+		btnOrder = new button("Order",new Color(0, 205, 255),new Color(0, 86, 108));
 		btnOrder.setBorder(new MatteBorder(1,1,1,1, new Color(102, 51, 255)));
 		btnOrder.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 		btnOrder.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mousePressed(MouseEvent e) {
-				btnOrder.hover(new Color(0, 0, 152),new Color(0, 0, 152));
+				btnOrder.hover(new Color(0, 70, 88),new Color(0, 70, 88));
 			}
 			@Override
 			public void mouseReleased(MouseEvent e) {
-				btnOrder.hover(new Color(0, 0, 122),new Color(0, 0, 52));
+				btnOrder.hover(new Color(0, 205, 255),new Color(0, 86, 108));
 			}
 			@Override
 			public void mouseClicked(MouseEvent e) {
@@ -235,17 +235,17 @@ public class ordersPanel {
 		btnOrder.setBounds(500, 425, 80, 25);
 		panel.add(btnOrder);
 		
-		btnDelete = new button("Delete",new Color(0, 0, 122),new Color(0, 0, 52));
+		btnDelete = new button("Delete",new Color(0, 205, 255),new Color(0, 86, 108));
 		btnDelete.setBorder(new MatteBorder(1,1,1,1, new Color(102, 51, 255)));
 		btnDelete.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 		btnDelete.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mousePressed(MouseEvent e) {
-				btnDelete.hover(new Color(0, 0, 152),new Color(0, 0, 152));
+				btnDelete.hover(new Color(0, 70, 88),new Color(0, 70, 88));
 			}
 			@Override
 			public void mouseReleased(MouseEvent e) {
-				btnDelete.hover(new Color(0, 0, 122),new Color(0, 0, 52));
+				btnDelete.hover(new Color(0, 205, 255),new Color(0, 86, 108));
 			}
 			@Override
 			public void mouseClicked(MouseEvent e) {

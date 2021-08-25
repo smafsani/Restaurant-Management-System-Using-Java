@@ -89,7 +89,7 @@ public class productsCustPanel {
 		lblNewLabel.setHorizontalAlignment(SwingConstants.CENTER);
 		lblNewLabel.setForeground(new Color(255, 255, 255));
 		lblNewLabel.setOpaque(true);
-		lblNewLabel.setBackground(new Color(102, 102, 204));
+		lblNewLabel.setBackground(new Color(64, 64, 202));
 		lblNewLabel.setBounds(1, 1, 688, 46);
 		panel.add(lblNewLabel);
 		
@@ -139,7 +139,7 @@ public class productsCustPanel {
 		});
 		searchBtn.setBounds(225, 6, 75, 23);
 		searchBtn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-		searchBtn.setBackground(new Color(102, 102, 153));
+		searchBtn.setBackground(new Color(64, 64, 202));
 		searchBtn.setForeground(Color.WHITE);
 		searchBtn.setFocusPainted(false);
 		searchBtn.setHorizontalAlignment(SwingConstants.CENTER);
@@ -159,7 +159,7 @@ public class productsCustPanel {
 		});
 		allBtn.setBounds(610, 6, 75, 23);
 		allBtn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-		allBtn.setBackground(new Color(102, 102, 153));
+		allBtn.setBackground(new Color(64, 64, 202));
 		allBtn.setForeground(Color.WHITE);
 		allBtn.setFocusPainted(false);
 		allBtn.setHorizontalAlignment(SwingConstants.CENTER);
@@ -184,7 +184,7 @@ public class productsCustPanel {
 		
 		table = new JTable(model);
 		table.setRowHeight(25);
-		table.getTableHeader().setBackground(Color.BLACK);
+		table.getTableHeader().setBackground(new Color(64, 64, 202));
 		table.getTableHeader().setForeground(Color.WHITE);
 		table.getTableHeader().setFont(new Font("SansSerif", Font.BOLD, 12));
 		table.setFont(new Font("SansSerif", Font.PLAIN, 12));

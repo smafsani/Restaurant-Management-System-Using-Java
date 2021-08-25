@@ -44,7 +44,7 @@ public class addEmployeePanel {
 	private JFrame frame;
 	private int w = 690;
 	private int h = 550;
-	private JPanel panel, panel2;
+	private JPanel panel, panel2, mainPanel;
 	private JTextField enField, enidField, mnField, adrsField, esField;
 	private Connection con = null;
 	private PreparedStatement pst = null;
@@ -90,7 +90,7 @@ public class addEmployeePanel {
 	 * Initialize the contents of the frame.
 	 */
 	public JPanel returnPanel() {
-		return panel;
+		return mainPanel;
 	}
 	private void initialize() {
 		frame = new JFrame();
@@ -98,11 +98,17 @@ public class addEmployeePanel {
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(null);
 		
+		mainPanel = new JPanel();
+		mainPanel.setBackground(Color.WHITE);
+		mainPanel.setBounds(0, 0, w, h);
+		mainPanel.setLayout(null);
+		frame.getContentPane().add(mainPanel);
+		
 		panel = new JPanel();
 		panel.setBackground(Color.WHITE);
 		panel.setBounds(0, 0, w, h);
 		panel.setLayout(null);
-		frame.getContentPane().add(panel);
+		mainPanel.add(panel);
 		
 		JLabel lblNewLabel = new JLabel("Add New Employee");
 		lblNewLabel.setFont(new Font("Serif", Font.BOLD, 23));
@@ -124,7 +130,7 @@ public class addEmployeePanel {
 				panel.setVisible(false);
 				panel2 = new editEmployees().returnPanel();
 				panel2.setLocation(0, 0);
-				frame.getContentPane().add(panel2);
+				mainPanel.add(panel2);
 				labelBack.setLocation(5, 425);
 				panel2.add(labelBack);
 			}
@@ -142,7 +148,7 @@ public class addEmployeePanel {
 				panel.setVisible(false);
 				panel2 = new setSalariesPanel(globalPassword, globalType).returnPanel();
 				panel2.setLocation(0, 0);
-				frame.getContentPane().add(panel2);
+				mainPanel.add(panel2);
 				labelBack.setLocation(5, 46);
 				panel2.add(labelBack);
 			}
@@ -708,7 +714,7 @@ class editEmployees{
 		
 		table = new JTable(model);
 		table.setRowHeight(25);
-		table.getTableHeader().setBackground(Color.BLACK);
+		table.getTableHeader().setBackground(new Color(0, 0, 102));
 		table.getTableHeader().setForeground(Color.WHITE);
 		table.getTableHeader().setFont(new Font("SansSerif", Font.BOLD, 12));
 		table.setFont(new Font("SansSerif", Font.PLAIN, 12));
