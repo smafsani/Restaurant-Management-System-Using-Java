@@ -274,7 +274,7 @@ public class usersPanel {
 		
 		table = new JTable(model);
 		table.setRowHeight(25);
-		table.getTableHeader().setBackground(Color.BLACK);
+		table.getTableHeader().setBackground(new Color(117, 0, 117));
 		table.getTableHeader().setForeground(Color.WHITE);
 		table.getTableHeader().setFont(new Font("SansSerif", Font.BOLD, 12));
 		table.setFont(new Font("SansSerif", Font.PLAIN, 12));
@@ -285,8 +285,14 @@ public class usersPanel {
 		model.addColumn("Password");
 		model.addColumn("Mobile");
 		model.addColumn("Type");
+		model.addColumn("Email");
 		scrollPane.setViewportView(table);
+		table.getColumnModel().getColumn(3).setMinWidth(0);
+		table.getColumnModel().getColumn(3).setMaxWidth(0);
+		table.getColumnModel().getColumn(3).setWidth(0);
 		table.getColumnModel().getColumn(2).setPreferredWidth(140);
+		table.getColumnModel().getColumn(0).setPreferredWidth(60);
+		table.getColumnModel().getColumn(6).setPreferredWidth(120);
 		setTable();
 		
 		btnUpdate = new button("Update",new Color(255, 0, 255),new Color(127, 0, 127));
@@ -377,7 +383,7 @@ public class usersPanel {
 			while(rs.next())
 			{
 				model.addRow(new Object[] {rs.getInt(1), rs.getString(2), rs.getString(3), rs.getString(4), rs.getString(5)
-						, rs.getString(6)});
+						, rs.getString(6), rs.getString(7)});
 			}
 		} catch (Exception e) {
 		JOptionPane.showMessageDialog(null, e);}
@@ -405,7 +411,7 @@ public class usersPanel {
 			while(rs.next())
 			{
 				model.addRow(new Object[] {rs.getInt(1), rs.getString(2), rs.getString(3), rs.getString(4), rs.getString(5)
-						, rs.getString(6)});
+						, rs.getString(6), rs.getString(7)});
 			}
 		} catch (Exception e) {
 		JOptionPane.showMessageDialog(null, e);}
@@ -417,6 +423,10 @@ public class usersPanel {
 			errorTextArea.setVisible(true);
 		}
 		else if(s.equals("")) {
+			errorTextArea.setText("Invalid "+str+" input. Please check and try again.");
+			errorTextArea.setVisible(true);
+		}
+		else if(!s.contains(".com") && !s.contains("@")) {
 			errorTextArea.setText("Invalid "+str+" input. Please check and try again.");
 			errorTextArea.setVisible(true);
 		}
@@ -435,12 +445,14 @@ public class usersPanel {
 		String pass = model2.getValueAt(rowIndex, 3).toString();
 		String mobile = model2.getValueAt(rowIndex, 4).toString();
 		String type = model2.getValueAt(rowIndex, 5).toString();
+		String emal = model2.getValueAt(rowIndex, 6).toString();
 		boolean bool = true;
 		bool = checkValidOrNot(uname, "username");
 		if(bool)bool = checkValidOrNot(fname, "full name");
 		if(bool)bool = checkValidOrNot(pass, "password");
 		if(bool)bool = checkValidOrNot(mobile, "mobile");
 		if(bool) bool = checkValidOrNot(type, "type");
+		if(bool) bool = checkValidOrNot(emal, "email");
 		if(bool) {
 			try {
 				pst = con.prepareStatement("UPDATE users SET username = ?, fullname = ?, password = ?,"

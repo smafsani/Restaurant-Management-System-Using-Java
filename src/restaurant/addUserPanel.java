@@ -45,6 +45,7 @@ public class addUserPanel {
 	private JPasswordField passwordField;
 	private JPasswordField confPassField;
 	private JTextArea ErrorMessageArea;
+	private JTextField emailField;
 	/**
 	 * Launch the application.
 	 */
@@ -202,14 +203,15 @@ public class addUserPanel {
 			public void mouseClicked(MouseEvent e) {
 				ErrorMessageArea.setVisible(false);
 		
-				String un, fn, pass, confpass, mno, type;
-				un = fn = pass = confpass = mno = type = "";
+				String un, fn, pass, confpass, mno, type, email;
+				un = fn = pass = confpass = mno = type = email = "";
 				try {
 					un = userNameField.getText();
 					fn = fullNameField.getText();
 					pass = String.valueOf(passwordField.getPassword());
 					confpass = String.valueOf(confPassField.getPassword());
 					mno = mobileNoField.getText();
+					email = emailField.getText();
 					if(adminCheckBox.isSelected())
 						type = "Admin";
 					else if(userCheckBox.isSelected())
@@ -219,7 +221,7 @@ public class addUserPanel {
 					JOptionPane.showMessageDialog(null, "Invalid Input");
 				}
 				boolean bool2 = false;
-				bool2 = checkErrors(un, fn, pass, confpass, mno, type);
+				bool2 = checkErrors(un, fn, pass, confpass, mno, type, email);
 				boolean bool = false;
 				if(bool2) bool = isUniqueUsernameMobile(un, mno);
 				if(bool && bool2) {
@@ -258,7 +260,7 @@ public class addUserPanel {
 		lblNewLab_5_1.setHorizontalAlignment(SwingConstants.RIGHT);
 		lblNewLab_5_1.setForeground(Color.BLACK);
 		lblNewLab_5_1.setFont(new Font("SansSerif", Font.BOLD, 14));
-		lblNewLab_5_1.setBounds(60, 335, 115, 25);
+		lblNewLab_5_1.setBounds(60, 360, 115, 25);
 		panel.add(lblNewLab_5_1);
 		
 		adminCheckBox = new JCheckBox("Admin");
@@ -271,7 +273,7 @@ public class addUserPanel {
 			}
 		});
 		adminCheckBox.setFont(new Font("SansSerif", Font.BOLD, 14));
-		adminCheckBox.setBounds(185, 333, 70, 30);
+		adminCheckBox.setBounds(185, 360, 70, 28);
 		panel.add(adminCheckBox);
 		
 		userCheckBox = new JCheckBox("User");
@@ -284,7 +286,7 @@ public class addUserPanel {
 			}
 		});
 		userCheckBox.setFont(new Font("SansSerif", Font.BOLD, 14));
-		userCheckBox.setBounds(265, 333, 70, 30);
+		userCheckBox.setBounds(265, 360, 70, 28);
 		panel.add(userCheckBox);
 		
 		passwordField = new JPasswordField();
@@ -345,6 +347,21 @@ public class addUserPanel {
 		showconfpassBox.setBackground(Color.WHITE);
 		showconfpassBox.setBounds(185, 258, 101, 15);
 		panel.add(showconfpassBox);
+		
+		JLabel lblNewLab_5_2 = new JLabel("Email:");
+		lblNewLab_5_2.setToolTipText("Must be unique");
+		lblNewLab_5_2.setHorizontalAlignment(SwingConstants.RIGHT);
+		lblNewLab_5_2.setForeground(Color.BLACK);
+		lblNewLab_5_2.setFont(new Font("SansSerif", Font.BOLD, 14));
+		lblNewLab_5_2.setBounds(60, 324, 115, 25);
+		panel.add(lblNewLab_5_2);
+		
+		emailField = new JTextField();
+		emailField.setFont(new Font("SansSerif", Font.PLAIN, 16));
+		emailField.setColumns(10);
+		emailField.setBorder(new MatteBorder(0, 0, 1, 0, Color.BLACK));
+		emailField.setBounds(185, 324, 258, 30);
+		panel.add(emailField);
 	}
 	private boolean isUniqueUsernameMobile(String username, String mobileNo) {
 		boolean userN = false;
@@ -374,7 +391,8 @@ public class addUserPanel {
 		}
 		return false;
 	}
-	public boolean checkErrors(String un, String fn, String pass, String cpass, String mobile, String type) {
+	public boolean checkErrors(String un, String fn, String pass, String cpass, String mobile, String type,
+			String email) {
 		if(!un.equals(un.toLowerCase()))
 		{
 			ErrorMessageArea.setText(" Username must have all lowercase characters. Try again.");
@@ -397,8 +415,31 @@ public class addUserPanel {
 			ErrorMessageArea.setVisible(true);
 			return false;
 		}
+		if(!mobile.equals("")) {
+			for(char ch : mobile.toCharArray()) {
+				if(!Character.isDigit(ch))
+				{
+					ErrorMessageArea.setText(" Enter valid mobile number and try again.");
+					ErrorMessageArea.setVisible(true);
+					return false;
+				}
+			}
+		}
+		if(!mobile.equals("")) {
+			if(mobile.length() != 11)
+			{
+				ErrorMessageArea.setText(" Enter valid mobile number and try again.");
+				ErrorMessageArea.setVisible(true);
+				return false;
+			}
+		}
 		if(type.equals("")) {
-			ErrorMessageArea.setText("Passwords select account type and try again.");
+			ErrorMessageArea.setText(" Passwords select account type and try again.");
+			ErrorMessageArea.setVisible(true);
+			return false;
+		}
+		if(email.equals("") || (!email.contains(".com") && !email.contains("@"))) {
+			ErrorMessageArea.setText(" Invalid email input and try again.");
 			ErrorMessageArea.setVisible(true);
 			return false;
 		}

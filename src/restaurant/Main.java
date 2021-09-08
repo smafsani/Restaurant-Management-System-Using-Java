@@ -28,7 +28,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import javax.swing.JComboBox;
 public class Main extends JFrame{
-	public JLabel label;
 	public JTextField usernameField;
 	public JPasswordField passwordField;
 	Connection con = null;
@@ -41,7 +40,7 @@ public class Main extends JFrame{
 	
 	public Main()
 	{
-		setLayout(null);
+		getContentPane().setLayout(null);
 		setSize(810, 650);
 		setLocationRelativeTo(null);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -54,15 +53,7 @@ public class Main extends JFrame{
 		panel.setSize(810, 650);
 		panel.setVisible(true);
 		panel.setLayout(null);
-		add(panel);
-		
-		label = new JLabel();
-		label.setBounds(0, 90, 810, 50);
-		label.setText("Login");
-		label.setHorizontalAlignment(SwingConstants.CENTER);
-		label.setFont(new Font("Tahoma", Font.BOLD, 35));
-		label.setForeground(Color.WHITE);
-		panel.add(label);
+		getContentPane().add(panel);
 		
 		JLabel username = new JLabel("Username: ");
 		username.setHorizontalAlignment(SwingConstants.CENTER);
@@ -229,6 +220,25 @@ public class Main extends JFrame{
 		comboBox.setBounds(393, 178, 99, 20);
 		comboBox.setModel(new DefaultComboBoxModel(str));
 		panel.add(comboBox);
+		
+		JLabel lblNewLabel = new JLabel("Not have any account");
+		lblNewLabel.setForeground(Color.WHITE);
+		lblNewLabel.setBounds(344, 448, 122, 14);
+		panel.add(lblNewLabel);
+		
+		JLabel lblNewLabel_1 = new JLabel("Register");
+		lblNewLabel_1.setBorder(new MatteBorder(0, 0, 1, 0, (Color) Color.GREEN));
+		lblNewLabel_1.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+		lblNewLabel_1.setForeground(Color.GREEN);
+		lblNewLabel_1.setBounds(470, 448, 50, 14);
+		panel.add(lblNewLabel_1);
+		
+		JLabel lblNewLabel_2 = new JLabel("LOGIN");
+		lblNewLabel_2.setHorizontalAlignment(SwingConstants.CENTER);
+		lblNewLabel_2.setFont(new Font("SansSerif", Font.BOLD, 28));
+		lblNewLabel_2.setForeground(Color.WHITE);
+		lblNewLabel_2.setBounds(0, 36, 793, 52);
+		panel.add(lblNewLabel_2);
 		
 		
 	}
