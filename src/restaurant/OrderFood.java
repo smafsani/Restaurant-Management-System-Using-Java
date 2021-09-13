@@ -4,12 +4,15 @@ import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.print.PrinterException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.Date;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
@@ -30,13 +33,12 @@ import java.awt.event.ActionEvent;
 import javax.swing.JPasswordField;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-
 public class OrderFood {
 
 	private JFrame frame;
 	private int w = 690;
 	private int h = 550;
-	private int quan=0;
+	private int quan=0, totalPrice=0;
 	private JPanel panel;
 	private JTextField userNameField;
 	private JTextField fullNameField;
@@ -51,12 +53,18 @@ public class OrderFood {
 	private DefaultTableModel model;
 	private JScrollPane scrollPane;
 	private button btnAdd;
-	private JTextField txtD;
-	private JScrollPane scrollPane_1;
+	private JTextField quantityField;
+	private JScrollPane receiptAreaScroll;
 	private JCheckBox checkBoxTable;
 	private JCheckBox checkBoxHome;
 	private String globalType = "";
-	private JTextArea receiptArea;
+	private JTextArea receiptArea,addrName, addrMobile, addressArea;
+	private button generateReceipt,resetBtn,printBtn;
+	private JLabel lblNewLabel_2,lblNewLabel_3,lblNewLabel_4;
+	private String dateGlob="";
+	private button deliverBtn;
+	private JLabel lblNewLabel_5;
+	private String items="";
 	/**
 	 * Launch the application.
 	 */
@@ -77,6 +85,7 @@ public class OrderFood {
 	 * Create the application.
 	 */
 	public OrderFood(String s) {
+		totalPrice = 0;
 		globalType = s;
 		con = dbconnection.connectDB();
 		initialize();
@@ -115,7 +124,7 @@ public class OrderFood {
 		lblNewLabel.setHorizontalAlignment(SwingConstants.CENTER);
 		lblNewLabel.setForeground(Color.WHITE);
 		lblNewLabel.setOpaque(true);
-		lblNewLabel.setBackground(new Color(100, 100, 100));
+		lblNewLabel.setBackground(new Color(0, 51, 51));
 		lblNewLabel.setBounds(1, 1, 688, 46);
 		panel.add(lblNewLabel);
 		
@@ -126,7 +135,7 @@ public class OrderFood {
 		
 		model = new DefaultTableModel() {
 			boolean[] columnEditable = new boolean[] {
-					false, false, false
+					false, false, false, false
 			};
 			public boolean isCellEditable(int row, int col) {
 				return columnEditable[col];
@@ -135,7 +144,7 @@ public class OrderFood {
 		
 		table = new JTable(model);
 		table.setRowHeight(25);
-		table.getTableHeader().setBackground(new Color(117, 0, 117));
+		table.getTableHeader().setBackground(new Color(0, 51, 51));
 		table.getTableHeader().setForeground(Color.WHITE);
 		table.getTableHeader().setFont(new Font("SansSerif", Font.BOLD, 12));
 		table.setFont(new Font("SansSerif", Font.PLAIN, 12));
@@ -147,12 +156,12 @@ public class OrderFood {
 		table.getColumnModel().getColumn(1).setMinWidth(75);
 		table.getColumnModel().getColumn(1).setMaxWidth(75);
 		table.getColumnModel().getColumn(1).setWidth(75);
-		table.getColumnModel().getColumn(2).setMinWidth(55);
-		table.getColumnModel().getColumn(2).setMaxWidth(55);
-		table.getColumnModel().getColumn(2).setWidth(55);
-		table.getColumnModel().getColumn(3).setMinWidth(50);
-		table.getColumnModel().getColumn(3).setMaxWidth(50);
-		table.getColumnModel().getColumn(3).setWidth(50);
+		table.getColumnModel().getColumn(2).setMinWidth(50);
+		table.getColumnModel().getColumn(2).setMaxWidth(50);
+		table.getColumnModel().getColumn(2).setWidth(50);
+		table.getColumnModel().getColumn(3).setMinWidth(55);
+		table.getColumnModel().getColumn(3).setMaxWidth(55);
+		table.getColumnModel().getColumn(3).setWidth(55);
 		table.setFont(new Font("SansSerif", Font.BOLD, 12));
 		table.setRowHeight(table.getRowHeight()-5);
 		scrollPane.setViewportView(table);
@@ -166,22 +175,29 @@ public class OrderFood {
 			table.getColumnModel().getColumn(j).setCellRenderer(render);
 		}
 		
-		btnAdd = new button("Add",new Color(255, 0, 255),new Color(127, 0, 127));
-		btnAdd.start = Color.LIGHT_GRAY;
-		btnAdd.end = Color.GRAY;
+		btnAdd = new button("Add",new Color(0, 133, 0),new Color(0, 51, 51));
 		btnAdd.setBorder(new MatteBorder(1,1,1,1, Color.DARK_GRAY));
 		btnAdd.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 		btnAdd.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mousePressed(MouseEvent e) {
-				btnAdd.hover(new Color(75, 0, 75), new Color(75, 0, 75));
+				btnAdd.hover(new Color(0, 51, 51),new Color(0, 51, 51));
 			}
 			@Override
 			public void mouseReleased(MouseEvent e) {
-				btnAdd.hover(new Color(255, 0, 255),new Color(127, 0, 127));
+				btnAdd.hover(new Color(0, 133, 0),new Color(0, 51, 51));
 			}
 			@Override
 			public void mouseClicked(MouseEvent e) {
+				if(quantityField.getText().equals("") || quantityField.getText().equals("0")) {
+					JOptionPane.showMessageDialog(null, "Please Enter Quantity");
+				}
+				else
+				{
+					if(table.getSelectedRow() != -1) {
+						addIntoRecepit(table.getSelectedRow());
+					}
+				}
 			}
 		});
 		btnAdd.setForeground(Color.WHITE);
@@ -196,22 +212,24 @@ public class OrderFood {
 		lblNewLabel_1.setBounds(5, 311, 81, 25);
 		panel.add(lblNewLabel_1);
 		
-		txtD = new JTextField(Integer.toString(quan));
-		txtD.setBorder(new MatteBorder(1, 1, 1, 1, (Color) Color.GRAY));
-		txtD.setFont(new Font("SansSerif", Font.PLAIN, 14));
-		txtD.setHorizontalAlignment(SwingConstants.CENTER);
-		txtD.setBounds(84, 311, 61, 25);
-		panel.add(txtD);
-		txtD.setColumns(10);
+		quantityField = new JTextField(Integer.toString(quan));
+		quantityField.setBorder(new MatteBorder(1, 1, 1, 1, (Color) Color.GRAY));
+		quantityField.setFont(new Font("SansSerif", Font.PLAIN, 14));
+		quantityField.setHorizontalAlignment(SwingConstants.CENTER);
+		quantityField.setBounds(84, 311, 61, 25);
+		panel.add(quantityField);
+		quantityField.setColumns(10);
 		
-		scrollPane_1 = new JScrollPane();
-		scrollPane_1.setBounds(358, 49, 296, 325);
-		panel.add(scrollPane_1);
+		receiptAreaScroll = new JScrollPane();
+		receiptAreaScroll.setBounds(358, 49, 322, 299);
+		receiptAreaScroll.setVisible(false);
+		panel.add(receiptAreaScroll);
 		
 		receiptArea = new JTextArea();
-		scrollPane_1.setViewportView(receiptArea);
+		receiptAreaScroll.setViewportView(receiptArea);
+		receiptArea.setEditable(false);
 		receiptArea.setBorder(new MatteBorder(1, 1, 1, 1, (Color) new Color(0, 0, 0)));
-		receiptArea.setText("a\na\na\na\na\na\na\na\na\na\na\na\na\na\na\na\na\na\na");
+		receiptArea.setFont(new Font("SensSerif", Font.PLAIN, 12));
 		
 		checkBoxTable = new JCheckBox("On Table");
 		checkBoxTable.setBackground(new Color(250, 250, 250));
@@ -221,8 +239,21 @@ public class OrderFood {
 			checkBoxTable.setVisible(false);
 		checkBoxTable.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				if(checkBoxTable.isSelected())
+				if(checkBoxTable.isSelected()) {
+					printBtn.setEnabled(true);
 					checkBoxHome.setSelected(false);
+					deliverBtn.setEnabled(false);
+					addressArea.setEnabled(false);
+					addrMobile.setEnabled(false);
+					addrName.setEnabled(false);
+				}
+				else if(!checkBoxHome.isSelected()) {
+					printBtn.setEnabled(false);
+					deliverBtn.setEnabled(false);
+					addressArea.setEnabled(false);
+					addrMobile.setEnabled(false);
+					addrName.setEnabled(false);
+				}
 			}
 		});
 		checkBoxTable.setBounds(120, 343, 81, 20);
@@ -236,12 +267,216 @@ public class OrderFood {
 			checkBoxHome.setVisible(false);
 		checkBoxHome.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				if(checkBoxHome.isSelected())
+				if(checkBoxHome.isSelected()) {
 					checkBoxTable.setSelected(false);
+					printBtn.setEnabled(true);
+					deliverBtn.setEnabled(true);
+					addressArea.setEnabled(true);
+					addrMobile.setEnabled(true);
+					addrName.setEnabled(true);
+				}
+				else if(!checkBoxTable.isSelected()) {
+					printBtn.setEnabled(false);
+					deliverBtn.setEnabled(false);
+					addressArea.setEnabled(false);
+					addrMobile.setEnabled(false);
+					addrName.setEnabled(false);
+				}
 			}
 		});
 		checkBoxHome.setBounds(5, 343, 112, 20);
 		panel.add(checkBoxHome);
+		
+		generateReceipt = new button("Generate Receipt", new Color(0, 133, 0),new Color(0, 51, 51));
+		generateReceipt.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+		generateReceipt.setBorder(new MatteBorder(1,1,1,1,Color.GRAY));
+		generateReceipt.setForeground(Color.WHITE);
+		generateReceipt.setHorizontalAlignment(SwingConstants.CENTER);
+		generateReceipt.setBounds(10, 380, 107, 25);
+		generateReceipt.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mousePressed(MouseEvent e) {
+				generateReceipt.hover(new Color(0, 51, 51),new Color(0, 51, 51));
+			}
+			@Override
+			public void mouseReleased(MouseEvent e) {
+				generateReceipt.hover(new Color(0, 133, 0),new Color(0, 51, 51));
+			}
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				if(!receiptArea.getText().contains("BILL RECEIPT"))
+				{
+					receiptAreaScroll.setVisible(true);
+					String str="";
+					str="***************************************************************\n";
+					str+="*                                     BILL RECEIPT                                      *\n";
+					str+="***************************************************************\n";
+					Date obj = new Date();
+					String date = obj.toString();
+					str+=date+"\nName(quantity)                                                               Price\n\n";
+					receiptArea.setText(str+receiptArea.getText());
+					dateGlob = date.substring(0, date.length()-9);
+				}
+			}
+		});
+		panel.add(generateReceipt);
+		
+		resetBtn = new button("Reset", new Color(0, 133, 0),new Color(0, 51, 51));
+		resetBtn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+		resetBtn.setBorder(new MatteBorder(1,1,1,1,Color.GRAY));
+		resetBtn.setForeground(Color.WHITE);
+		resetBtn.setHorizontalAlignment(SwingConstants.CENTER);
+		resetBtn.setBounds(130, 380, 70, 25);
+		resetBtn.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mousePressed(MouseEvent e) {
+				resetBtn.hover(new Color(0, 51, 51),new Color(0, 51, 51));
+			}
+			@Override
+			public void mouseReleased(MouseEvent e) {
+				resetBtn.hover(new Color(0, 133, 0),new Color(0, 51, 51));
+			}
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				receiptArea.setText("");
+				quan = 0;
+				totalPrice=0;
+				quantityField.setText(Integer.toString(quan));
+				checkBoxHome.setSelected(false);
+				checkBoxTable.setSelected(false);
+				receiptAreaScroll.setVisible(false);
+			}
+		});
+		panel.add(resetBtn);
+		
+		printBtn = new button("Print Receipt", new Color(0, 133, 0),new Color(0, 51, 51));
+		printBtn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+		printBtn.setBorder(new MatteBorder(1,1,1,1,Color.GRAY));
+		printBtn.setForeground(Color.WHITE);
+		if(!checkBoxHome.isSelected() && !checkBoxTable.isSelected())
+			printBtn.setEnabled(false);
+		printBtn.setHorizontalAlignment(SwingConstants.CENTER);
+		printBtn.setBounds(215, 380, 110, 25);
+		printBtn.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mousePressed(MouseEvent e) {
+				printBtn.hover(new Color(0, 51, 51),new Color(0, 51, 51));
+			}
+			@Override
+			public void mouseReleased(MouseEvent e) {
+				printBtn.hover(new Color(0, 133, 0),new Color(0, 51, 51));
+			}
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				if(!receiptArea.getText().equals("") && receiptAreaScroll.isVisible()) {
+					if(checkBoxHome.isSelected()) {
+						String n = addrName.getText();
+						String m = addrMobile.getText();
+						String adr = addressArea.getText();
+						if(n.equals("") || m.equals("") || adr.equals("")) 
+							JOptionPane.showMessageDialog(null, "Please Fill All The Customer Info Fields.");
+						else {
+							String s = "\nTotal:\t\t\t"+Integer.toString(totalPrice)+"\n";
+							totalPrice = 0;
+							s += "\nCustomer Info:\n----------------------\n";
+							s += "Name: "+n+"\n"+"Mobile: "+m+"\n"+"Address: "+adr+"\n\n\n";
+							s += "                                                                              Signature";
+							receiptArea.setText(receiptArea.getText()+s);
+							try {
+								receiptArea.print();
+							} catch (PrinterException e1) {
+								// TODO Auto-generated catch block
+								e1.printStackTrace();
+							}
+						}
+					}
+					else if(checkBoxTable.isSelected()) {
+						String s = "\nTotal:\t\t\t"+Integer.toString(totalPrice)+"\n";
+						totalPrice = 0;
+						s += "\n\n                                                                              Signature";
+						receiptArea.setText(receiptArea.getText()+s);
+						try {
+							receiptArea.print();
+						} catch (PrinterException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
+					}
+				}
+				else {
+					JOptionPane.showMessageDialog(null, "Generate Receipt First");
+				}
+			}
+		});
+		panel.add(printBtn);
+		
+		lblNewLabel_2 = new JLabel("NAME:");
+		lblNewLabel_2.setFont(new Font("SansSerif", Font.PLAIN, 12));
+		lblNewLabel_2.setHorizontalAlignment(SwingConstants.RIGHT);
+		lblNewLabel_2.setBounds(358, 370, 81, 20);
+		panel.add(lblNewLabel_2);
+		
+		lblNewLabel_3 = new JLabel("MOBILE:");
+		lblNewLabel_3.setHorizontalAlignment(SwingConstants.RIGHT);
+		lblNewLabel_3.setFont(new Font("SansSerif", Font.PLAIN, 12));
+		lblNewLabel_3.setBounds(358, 394, 81, 20);
+		panel.add(lblNewLabel_3);
+		
+		lblNewLabel_4 = new JLabel("ADDRESS:");
+		lblNewLabel_4.setHorizontalAlignment(SwingConstants.RIGHT);
+		lblNewLabel_4.setFont(new Font("SansSerif", Font.PLAIN, 12));
+		lblNewLabel_4.setBounds(371, 422, 68, 20);
+		panel.add(lblNewLabel_4);
+		
+		addrName = new JTextArea();
+		addrName.setFont(new Font("SansSerif", Font.PLAIN, 12));
+		addrName.setBounds(449, 370, 231, 20);
+		addrName.setBorder(new MatteBorder(1,1,1,1,Color.GRAY));
+		panel.add(addrName);
+		addrName.setEnabled(false);
+		addrName.setColumns(10);
+		
+		addrMobile = new JTextArea();
+		addrMobile.setFont(new Font("SansSerif", Font.PLAIN, 12));
+		addrMobile.setColumns(10);
+		addrMobile.setBounds(449, 394, 231, 20);
+		addrMobile.setBorder(new MatteBorder(1,1,1,1,Color.GRAY));
+		addrMobile.setEnabled(false);
+		panel.add(addrMobile);
+		
+		addressArea = new JTextArea();
+		addressArea.setBounds(449, 422, 231, 60);
+		addressArea.setBorder(new MatteBorder(1,1,1,1,Color.GRAY));
+		addressArea.setEnabled(false);
+		panel.add(addressArea);
+		
+		deliverBtn = new button("Deliver", new Color(0, 133, 0),new Color(0, 51, 51));
+		deliverBtn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+		deliverBtn.setBorder(new MatteBorder(1,1,1,1,Color.GRAY));
+		deliverBtn.setForeground(Color.WHITE);
+		deliverBtn.setEnabled(false);
+		deliverBtn.setHorizontalAlignment(SwingConstants.CENTER);
+		deliverBtn.setBounds(10, 415, 70, 25);
+		deliverBtn.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mousePressed(MouseEvent e) {
+				deliverBtn.hover(new Color(0, 51, 51),new Color(0, 51, 51));
+			}
+			@Override
+			public void mouseReleased(MouseEvent e) {
+				deliverBtn.hover(new Color(0, 133, 0),new Color(0, 51, 51));
+			}
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				deliverOrder();
+			}
+		});
+		panel.add(deliverBtn);
+		
+		lblNewLabel_5 = new JLabel("Customer Info For Home Delivery:");
+		lblNewLabel_5.setFont(new Font("SansSerif", Font.PLAIN, 13));
+		lblNewLabel_5.setBounds(395, 349, 285, 20);
+		panel.add(lblNewLabel_5);
 	}
 	
 	public void setTable() {
@@ -253,6 +488,64 @@ public class OrderFood {
 			}
 		}catch(Exception e) {
 			e.printStackTrace();
+		}
+	}
+	public void addIntoRecepit(int rowIndex) {
+		TableModel md = table.getModel();
+		String Name = md.getValueAt(rowIndex, 0).toString();
+		int Price = Integer.parseInt(md.getValueAt(rowIndex, 2).toString());
+		int qnt = Integer.parseInt(md.getValueAt(rowIndex, 3).toString());
+		int Quantity = Integer.parseInt(quantityField.getText());
+		
+		if(Quantity > qnt)
+			JOptionPane.showMessageDialog(null, "We don't have this item enough in stock");
+		else {
+			quan += Quantity;
+			totalPrice += Price*Quantity;
+			String str = Name+"("+Integer.toString(Quantity)+")";
+			int len = Name.length()/12;
+			len = 3-len;
+			for(int j=0;j<len;j++) 
+				str+="\t";
+			str+=Integer.toString(Price*Quantity)+"\n";
+			receiptArea.setText(receiptArea.getText()+str);
+			items = Integer.toString(Quantity)+" "+Name+", ";
+			md.setValueAt(qnt-Quantity, rowIndex, 3);
+			resetQuantity(Name,md.getValueAt(rowIndex, 1).toString(), qnt-Quantity);
+		}
+	}
+	public void deliverOrder() {
+		String name = addrName.getText();
+		String mobile = addrMobile.getText();
+		String address = addressArea.getText();
+		String time = dateGlob;
+		String item = items;
+		addrName.setText("");
+		addrMobile.setText("");
+		addressArea.setText("");
+		try {
+			pst = con.prepareStatement("INSERT INTO orders (name, mobile, address, items, order_time, status) "
+					+ "VALUES (?, ?, ?, ?, ?, ?)");
+			pst.setString(1, name);
+			pst.setString(2, mobile);
+			pst.setString(3, address);
+			pst.setString(4, items);
+			pst.setString(5, time);
+			pst.setString(6, "Delivered");
+			pst.executeUpdate();
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+	}
+	public void resetQuantity(String Name, String Category, int quantity) {
+		try {
+			pst = con.prepareStatement("UPDATE products SET quantity=? WHERE product_name=? and category=?");
+			pst.setInt(1, quantity);
+			pst.setString(2, Name);
+			pst.setString(3, Category);
+			pst.executeUpdate();
+		} catch (Exception e) {
+			// TODO: handle exception
 		}
 	}
 }
