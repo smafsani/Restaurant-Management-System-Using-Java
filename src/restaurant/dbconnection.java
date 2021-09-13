@@ -2,6 +2,7 @@ package restaurant;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.util.Properties;
 
 import javax.swing.JOptionPane;
 
@@ -17,6 +18,14 @@ public class dbconnection {
 			JOptionPane.showMessageDialog(null, e, "Error", JOptionPane.ERROR_MESSAGE);
 			return null;
 		}
+		
+	}
+	
+	public static void sendEmail(String toEmail) {
+		String fromEmail = "syedafsani2019@gmail.com";
+		String host = "localhost";
+		
+		Properties properties = System.getProperties();
 		
 	}
 

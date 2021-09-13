@@ -56,7 +56,7 @@ public class AdminPanel extends JFrame{
 		bton.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent e) {
 				setVisible(false);
-				new Main().setVisible(true);
+				new Main().frame.setVisible(true);
 			}
 			
 			public void mousePressed(MouseEvent e) {
@@ -82,7 +82,10 @@ public class AdminPanel extends JFrame{
 				foodOrder.setSize(x+10, y);
 				setButtons("fo");
 				
+				JPanel pan = new OrderFood(globalType).returnPanel();
+				pan.setBounds(10, 10, 690, 500);
 				clearContainerPanel();
+				containerPanel.add(pan);
 			}
 			
 		});

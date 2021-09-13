@@ -24,11 +24,12 @@ public class CustomerPanel extends JFrame{
 	public Color col2 = new Color(0, 70, 123);
 	public JPanel containerPanel;
 	private JLabel lblNewLabel;
-	private String globalUsername, globalPassword;
+	private String globalUsername="", globalPassword="", globalType="";
 	private button profile;
-	public CustomerPanel(String s1, String s2) {
+	public CustomerPanel(String s1, String s2, String s3) {
 		globalUsername = s1;
 		globalPassword = s2;
+		globalType = s3;
 		getContentPane().setLayout(null);
 		setSize(910,650);
 		setLocationRelativeTo(null);
@@ -56,7 +57,7 @@ public class CustomerPanel extends JFrame{
 		bton.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent e) {
 				setVisible(false);
-				new Main().setVisible(true);
+				new Main().frame.setVisible(true);
 			}
 			
 			public void mousePressed(MouseEvent e) {
@@ -82,7 +83,10 @@ public class CustomerPanel extends JFrame{
 				foodOrder.setSize(x+10, y);
 				setButtons("fo");
 				
+				JPanel pan = new OrderFood(globalType).returnPanel();
+				pan.setBounds(10, 10, 690, 500);
 				clearContainerPanel();
+				containerPanel.add(pan);
 			}
 			
 		});
@@ -186,7 +190,7 @@ public class CustomerPanel extends JFrame{
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					new CustomerPanel("", "").setVisible(true);
+					new CustomerPanel("", "", "User").setVisible(true);
 				}catch (Exception e) {
 				e.printStackTrace();}
 				
