@@ -4,11 +4,13 @@ import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.print.PrinterException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -20,20 +22,16 @@ import javax.swing.border.MatteBorder;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
-
 import afsani.gradiant.label.button;
-
 import java.awt.Color;
 import java.awt.Cursor;
 
 import javax.swing.JTextArea;
 import javax.swing.JCheckBox;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
 import javax.swing.JPasswordField;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-public class OrderFood {
+public class OrderFoodCustomer {
 
 	private JFrame frame;
 	private int w = 690;
@@ -55,16 +53,15 @@ public class OrderFood {
 	private button btnAdd;
 	private JTextField quantityField;
 	private JScrollPane receiptAreaScroll;
-	private JCheckBox checkBoxTable;
-	private JCheckBox checkBoxHome;
-	private String globalType = "";
+	private String globalName = "", globalPass="";
 	private JTextArea receiptArea,addrName, addrMobile, addressArea;
-	private button generateReceipt,resetBtn,printBtn;
+	private button resetBtn;
 	private JLabel lblNewLabel_2,lblNewLabel_3,lblNewLabel_4;
-	private String dateGlob="";
 	private button deliverBtn;
 	private JLabel lblNewLabel_5;
 	private String items="";
+	private Map<String, product> map = new HashMap<String, product>();
+	private button totalBtn;
 	/**
 	 * Launch the application.
 	 */
@@ -72,7 +69,7 @@ public class OrderFood {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					OrderFood window = new OrderFood("Admin");
+					OrderFoodCustomer window = new OrderFoodCustomer("user1", "user1pass");
 					window.frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -84,9 +81,10 @@ public class OrderFood {
 	/**
 	 * Create the application.
 	 */
-	public OrderFood(String s) {
+	public OrderFoodCustomer(String n, String p) {
+		globalName = n;
+		globalPass = p;
 		totalPrice = 0;
-		globalType = s;
 		con = dbconnection.connectDB();
 		initialize();
 	}
@@ -195,7 +193,7 @@ public class OrderFood {
 				else
 				{
 					if(table.getSelectedRow() != -1) {
-						addIntoRecepit(table.getSelectedRow());
+						addIntoItem(table.getSelectedRow());
 					}
 				}
 			}
@@ -222,7 +220,6 @@ public class OrderFood {
 		
 		receiptAreaScroll = new JScrollPane();
 		receiptAreaScroll.setBounds(358, 49, 322, 299);
-		receiptAreaScroll.setVisible(false);
 		panel.add(receiptAreaScroll);
 		
 		receiptArea = new JTextArea();
@@ -231,103 +228,12 @@ public class OrderFood {
 		receiptArea.setBorder(new MatteBorder(1, 1, 1, 1, (Color) new Color(0, 0, 0)));
 		receiptArea.setFont(new Font("SensSerif", Font.PLAIN, 12));
 		
-		checkBoxTable = new JCheckBox("On Table");
-		checkBoxTable.setBackground(new Color(250, 250, 250));
-		if(globalType.contains("Admin"))
-			checkBoxTable.setVisible(true);
-		else
-			checkBoxTable.setVisible(false);
-		checkBoxTable.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				if(checkBoxTable.isSelected()) {
-					printBtn.setEnabled(true);
-					checkBoxHome.setSelected(false);
-					deliverBtn.setEnabled(false);
-					addressArea.setEnabled(false);
-					addrMobile.setEnabled(false);
-					addrName.setEnabled(false);
-				}
-				else if(!checkBoxHome.isSelected()) {
-					printBtn.setEnabled(false);
-					deliverBtn.setEnabled(false);
-					addressArea.setEnabled(false);
-					addrMobile.setEnabled(false);
-					addrName.setEnabled(false);
-				}
-			}
-		});
-		checkBoxTable.setBounds(120, 343, 81, 20);
-		panel.add(checkBoxTable);
-		
-		checkBoxHome = new JCheckBox("Home Delivery");
-		checkBoxHome.setBackground(new Color(250, 250, 250));
-		if(globalType.contains("Admin"))
-			checkBoxHome.setVisible(true);
-		else
-			checkBoxHome.setVisible(false);
-		checkBoxHome.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				if(checkBoxHome.isSelected()) {
-					checkBoxTable.setSelected(false);
-					printBtn.setEnabled(true);
-					deliverBtn.setEnabled(true);
-					addressArea.setEnabled(true);
-					addrMobile.setEnabled(true);
-					addrName.setEnabled(true);
-				}
-				else if(!checkBoxTable.isSelected()) {
-					printBtn.setEnabled(false);
-					deliverBtn.setEnabled(false);
-					addressArea.setEnabled(false);
-					addrMobile.setEnabled(false);
-					addrName.setEnabled(false);
-				}
-			}
-		});
-		checkBoxHome.setBounds(5, 343, 112, 20);
-		panel.add(checkBoxHome);
-		
-		generateReceipt = new button("Generate Receipt", new Color(0, 133, 0),new Color(0, 51, 51));
-		generateReceipt.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-		generateReceipt.setBorder(new MatteBorder(1,1,1,1,Color.GRAY));
-		generateReceipt.setForeground(Color.WHITE);
-		generateReceipt.setHorizontalAlignment(SwingConstants.CENTER);
-		generateReceipt.setBounds(10, 380, 107, 25);
-		generateReceipt.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mousePressed(MouseEvent e) {
-				generateReceipt.hover(new Color(0, 51, 51),new Color(0, 51, 51));
-			}
-			@Override
-			public void mouseReleased(MouseEvent e) {
-				generateReceipt.hover(new Color(0, 133, 0),new Color(0, 51, 51));
-			}
-			@Override
-			public void mouseClicked(MouseEvent e) {
-				if(!receiptArea.getText().contains("BILL RECEIPT"))
-				{
-					receiptAreaScroll.setVisible(true);
-					String str="";
-					str="***************************************************************\n";
-					str+="                                   BILL RECEIPT                                  \n";
-					str+="***************************************************************\n";
-					Date obj = new Date();
-					String date = obj.toString();
-					str+=date+"\nName(quantity)                                               Price\n\n";
-                    
-					receiptArea.setText(str+receiptArea.getText());
-					dateGlob = date.substring(0, date.length()-9);
-				}
-			}
-		});
-		panel.add(generateReceipt);
-		
 		resetBtn = new button("Reset", new Color(0, 133, 0),new Color(0, 51, 51));
 		resetBtn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 		resetBtn.setBorder(new MatteBorder(1,1,1,1,Color.GRAY));
 		resetBtn.setForeground(Color.WHITE);
 		resetBtn.setHorizontalAlignment(SwingConstants.CENTER);
-		resetBtn.setBounds(130, 380, 70, 25);
+		resetBtn.setBounds(5, 348, 70, 25);
 		resetBtn.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mousePressed(MouseEvent e) {
@@ -343,75 +249,13 @@ public class OrderFood {
 				quan = 0;
 				totalPrice=0;
 				quantityField.setText(Integer.toString(quan));
-				checkBoxHome.setSelected(false);
-				checkBoxTable.setSelected(false);
-				printBtn.setEnabled(false);
-				deliverBtn.setEnabled(false);
-				receiptAreaScroll.setVisible(false);
+				receiptArea.setText("");
+				model.setRowCount(0);
+				setTable();
+				map.clear();
 			}
 		});
 		panel.add(resetBtn);
-		
-		printBtn = new button("Print Receipt", new Color(0, 133, 0),new Color(0, 51, 51));
-		printBtn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-		printBtn.setBorder(new MatteBorder(1,1,1,1,Color.GRAY));
-		printBtn.setForeground(Color.WHITE);
-		if(!checkBoxHome.isSelected() && !checkBoxTable.isSelected())
-			printBtn.setEnabled(false);
-		printBtn.setHorizontalAlignment(SwingConstants.CENTER);
-		printBtn.setBounds(215, 380, 110, 25);
-		printBtn.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mousePressed(MouseEvent e) {
-				printBtn.hover(new Color(0, 51, 51),new Color(0, 51, 51));
-			}
-			@Override
-			public void mouseReleased(MouseEvent e) {
-				printBtn.hover(new Color(0, 133, 0),new Color(0, 51, 51));
-			}
-			@Override
-			public void mouseClicked(MouseEvent e) {
-				if(!receiptArea.getText().equals("") && receiptAreaScroll.isVisible()) {
-					if(checkBoxHome.isSelected()) {
-						String n = addrName.getText();
-						String m = addrMobile.getText();
-						String adr = addressArea.getText();
-						if(n.equals("") || m.equals("") || adr.equals("")) 
-							JOptionPane.showMessageDialog(null, "Please Fill All The Customer Info Fields.");
-						else {
-							String s = "\nTotal:\t\t\t"+Integer.toString(totalPrice)+"\n";
-							totalPrice = 0;
-							s += "\nCustomer Info:\n----------------------\n";
-							s += "Name: "+n+"\n"+"Mobile: "+m+"\n"+"Address: "+adr+"\n\n\n";
-							s += "                                                             Signature";
-							receiptArea.setText(receiptArea.getText()+s);
-							try {
-								receiptArea.print();
-							} catch (PrinterException e1) {
-								// TODO Auto-generated catch block
-								e1.printStackTrace();
-							}
-						}
-					}
-					else if(checkBoxTable.isSelected()) {
-						String s = "\nTotal:\t\t\t"+Integer.toString(totalPrice)+"\n";
-						totalPrice = 0;
-						s += "\n\n                                                             Signature";
-						receiptArea.setText(receiptArea.getText()+s);
-						try {
-							receiptArea.print();
-						} catch (PrinterException e1) {
-							// TODO Auto-generated catch block
-							e1.printStackTrace();
-						}
-					}
-				}
-				else {
-					JOptionPane.showMessageDialog(null, "Generate Receipt First");
-				}
-			}
-		});
-		panel.add(printBtn);
 		
 		lblNewLabel_2 = new JLabel("NAME:");
 		lblNewLabel_2.setFont(new Font("SansSerif", Font.PLAIN, 12));
@@ -436,7 +280,6 @@ public class OrderFood {
 		addrName.setBounds(449, 370, 231, 20);
 		addrName.setBorder(new MatteBorder(1,1,1,1,Color.GRAY));
 		panel.add(addrName);
-		addrName.setEnabled(false);
 		addrName.setColumns(10);
 		
 		addrMobile = new JTextArea();
@@ -444,22 +287,19 @@ public class OrderFood {
 		addrMobile.setColumns(10);
 		addrMobile.setBounds(449, 394, 231, 20);
 		addrMobile.setBorder(new MatteBorder(1,1,1,1,Color.GRAY));
-		addrMobile.setEnabled(false);
 		panel.add(addrMobile);
 		
 		addressArea = new JTextArea();
 		addressArea.setBounds(449, 422, 231, 60);
 		addressArea.setBorder(new MatteBorder(1,1,1,1,Color.GRAY));
-		addressArea.setEnabled(false);
 		panel.add(addressArea);
 		
-		deliverBtn = new button("Deliver", new Color(0, 133, 0),new Color(0, 51, 51));
+		deliverBtn = new button("Order", new Color(0, 133, 0),new Color(0, 51, 51));
 		deliverBtn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 		deliverBtn.setBorder(new MatteBorder(1,1,1,1,Color.GRAY));
 		deliverBtn.setForeground(Color.WHITE);
-		deliverBtn.setEnabled(false);
 		deliverBtn.setHorizontalAlignment(SwingConstants.CENTER);
-		deliverBtn.setBounds(10, 415, 70, 25);
+		deliverBtn.setBounds(84, 348, 70, 25);
 		deliverBtn.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mousePressed(MouseEvent e) {
@@ -471,12 +311,49 @@ public class OrderFood {
 			}
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				deliverOrder();
+				if(!map.isEmpty()) {
+					if(addressArea.getText().equals("") || addrMobile.getText().equals("") || addrName.getText().equals("")) {
+						JOptionPane.showMessageDialog(null, "Please Give Your Information");
+					}
+					else {
+						String s = "";
+						for(Entry<String, product> entry: map.entrySet()) {
+							s += Integer.toString(entry.getValue().orderedQuantity)+"-"+entry.getValue().Name+",";
+						}
+						String s2 = "\nName: "+addrName.getText()+"\n";
+						s2 += "Mobile: "+addrMobile.getText()+"\n";
+						s2 += "Address: "+addressArea.getText()+"\n";
+						receiptArea.setText(receiptArea.getText()+s2);
+						makeOrder(s);
+					}
+				}
 			}
 		});
 		panel.add(deliverBtn);
 		
-		lblNewLabel_5 = new JLabel("Customer Info For Home Delivery:");
+		totalBtn = new button("Total", new Color(0, 133, 0),new Color(0, 51, 51));
+		totalBtn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+		totalBtn.setBorder(new MatteBorder(1,1,1,1,Color.GRAY));
+		totalBtn.setForeground(Color.WHITE);
+		totalBtn.setHorizontalAlignment(SwingConstants.CENTER);
+		totalBtn.setBounds(165, 348, 70, 25);
+		totalBtn.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mousePressed(MouseEvent e) {
+				totalBtn.hover(new Color(0, 51, 51),new Color(0, 51, 51));
+			}
+			@Override
+			public void mouseReleased(MouseEvent e) {
+				totalBtn.hover(new Color(0, 133, 0),new Color(0, 51, 51));
+			}
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				receiptArea.setText(receiptArea.getText()+"\nTotal: "+totalPrice+" Tk");
+			}
+		});
+		panel.add(totalBtn);
+		
+		lblNewLabel_5 = new JLabel("Your Info For Home Delivery:");
 		lblNewLabel_5.setFont(new Font("SansSerif", Font.PLAIN, 13));
 		lblNewLabel_5.setBounds(395, 349, 285, 20);
 		panel.add(lblNewLabel_5);
@@ -493,7 +370,7 @@ public class OrderFood {
 			e.printStackTrace();
 		}
 	}
-	public void addIntoRecepit(int rowIndex) {
+	public void addIntoItem(int rowIndex) {
 		TableModel md = table.getModel();
 		String Name = md.getValueAt(rowIndex, 0).toString();
 		int Price = Integer.parseInt(md.getValueAt(rowIndex, 2).toString());
@@ -505,50 +382,77 @@ public class OrderFood {
 		else {
 			quan += Quantity;
 			totalPrice += Price*Quantity;
-			String str = Name+"("+Integer.toString(Quantity)+")";
-			int len = Name.length()/12;
-			len = 3-len;
-			for(int j=0;j<len;j++) 
-				str+="\t";
-			str+=Integer.toString(Price*Quantity)+"\n";
+			String str = Integer.toString(Quantity)+" "+Name+"(s) ";
+			str+=Integer.toString(Price*Quantity)+" Tk\n";
 			receiptArea.setText(receiptArea.getText()+str);
-			items = Integer.toString(Quantity)+"-"+Name+",";
+			items = Integer.toString(Quantity)+" "+Name+", ";
 			md.setValueAt(qnt-Quantity, rowIndex, 3);
-			resetQuantity(Name,md.getValueAt(rowIndex, 1).toString(), qnt-Quantity);
+			product pr = new product(Name, md.getValueAt(rowIndex, 1).toString(), qnt-Quantity, Quantity);
+			map.put(Name, pr);
 		}
 	}
-	public void deliverOrder() {
+	public void makeOrder(String s) {
 		String name = addrName.getText();
 		String mobile = addrMobile.getText();
 		String address = addressArea.getText();
-		String time = dateGlob;
-		String item = items;
+		Date obj = new Date();
+		String date = obj.toString();
+		date = date.substring(0, date.length()-9);
 		addrName.setText("");
 		addrMobile.setText("");
 		addressArea.setText("");
+		int id = 0;
 		try {
-			pst = con.prepareStatement("INSERT INTO orders (name, mobile, address, items, order_time, status) "
-					+ "VALUES (?, ?, ?, ?, ?, ?)");
-			pst.setString(1, name);
-			pst.setString(2, mobile);
-			pst.setString(3, address);
-			pst.setString(4, items);
-			pst.setString(5, time);
-			pst.setString(6, "Delivered");
+			pst = con.prepareStatement("SELECT user_id FROM users WHERE username=? and password=?");
+			pst.setString(1, globalName);
+			pst.setString(2, globalPass);
+			rs = pst.executeQuery();
+			if(rs.next()) {
+				id = rs.getInt("user_id");
+			}
+		}
+		catch(Exception e) {}
+
+		try {
+			pst = con.prepareStatement("INSERT INTO orders (user_id, name, mobile, address, items, order_time, status) "
+					+ "VALUES (?, ?, ?, ?, ?, ?, ?)");
+			pst.setInt(1, id);
+			pst.setString(2, name);
+			pst.setString(3, mobile);
+			pst.setString(4, address);
+			pst.setString(5, s);
+			pst.setString(6, date);
+			pst.setString(7, "Not Delivered");
 			pst.executeUpdate();
+			JOptionPane.showMessageDialog(null, "Your order is sent");
 		} catch (Exception e) {
 			// TODO: handle exception
+		}
+		resetQuantity();
+	}
+	public void resetQuantity() {
+		for(Entry<String, product>entry: map.entrySet()) {
+			try {
+				pst = con.prepareStatement("UPDATE products SET quantity=? WHERE product_name=? and category=?");
+				pst.setInt(1, entry.getValue().Quantity);
+				pst.setString(2, entry.getValue().Name);
+				pst.setString(3, entry.getValue().Category);
+				pst.executeUpdate();
+			} catch (Exception e) {
+				// TODO: handle exception
+			}
 		}
 	}
-	public void resetQuantity(String Name, String Category, int quantity) {
-		try {
-			pst = con.prepareStatement("UPDATE products SET quantity=? WHERE product_name=? and category=?");
-			pst.setInt(1, quantity);
-			pst.setString(2, Name);
-			pst.setString(3, Category);
-			pst.executeUpdate();
-		} catch (Exception e) {
-			// TODO: handle exception
-		}
+}
+class product{
+	String Name;
+	String Category;
+	int Quantity;
+	int orderedQuantity;
+	public product(String n, String c, int q, int oq) {
+		Name = n;
+		Category = c;
+		Quantity = q;
+		orderedQuantity = oq;
 	}
 }

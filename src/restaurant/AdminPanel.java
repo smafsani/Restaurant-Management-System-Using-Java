@@ -6,6 +6,9 @@ import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -18,12 +21,15 @@ import javax.swing.JLabel;
 
 public class AdminPanel extends JFrame{
 
-	public int x = 150, y = 40;
+	public int x = 150, y = 40, count=0;
 	public button foodOrder, addProduct, addUser, addEmployee, products, usersLabel, ordersBtn, profileBtn;
 	public Color col1 = new Color(0, 127, 224);
 	public Color col2 = new Color(0, 70, 123);
 	public JPanel containerPanel;
-	private JLabel lblNewLabel;
+	private Connection con=null;
+	private PreparedStatement pst = null;
+	private ResultSet rs=null;
+	private JLabel lblNewLabel, notifyLabel;
 	private String globalUsername, globalPassword, globalType;
 	public AdminPanel(String s1, String s2, String s3) {
 		globalUsername = s1;
@@ -33,8 +39,18 @@ public class AdminPanel extends JFrame{
 		setSize(910,650);
 		setLocationRelativeTo(null);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		
+		con = dbconnection.connectDB();
 		initialize();
+		
+		try {
+			pst = con.prepareStatement("SELECT COUNT(*) AS count FROM orders");
+			rs = pst.executeQuery();
+			if(rs.next()) {
+				count = rs.getInt(1);
+			}
+		}catch(Exception e) {}
+		
+		checkOrders();
 	}
 	
 	
@@ -146,6 +162,13 @@ public class AdminPanel extends JFrame{
 		});
 		barPanel.add(addUser);
 		
+		notifyLabel = new JLabel("0");
+		notifyLabel.setForeground(Color.WHITE);
+		notifyLabel.setHorizontalAlignment(SwingConstants.RIGHT);
+		notifyLabel.setBounds(124, 406, 25, 14);
+		notifyLabel.setVisible(false);
+		barPanel.add(notifyLabel);
+		
 		addEmployee = new button("Add Employee", col1, col2);
 		addEmployee.setBorder(new MatteBorder(2, 2, 2, 2,Color.WHITE));
 		addEmployee.setHorizontalAlignment(SwingConstants.CENTER);
@@ -236,8 +259,17 @@ public class AdminPanel extends JFrame{
 				clearContainerPanel();
 				containerPanel.add(pan);
 				
+				notifyLabel.setVisible(false);
+				notifyLabel.setText("0");
+				
+				try {
+					pst = con.prepareStatement("SELECT COUNT(*) AS count FROM orders");
+					rs = pst.executeQuery();
+					if(rs.next()) {
+						count = rs.getInt(1);
+					}
+				}catch(Exception ec) {}
 			}
-			
 		});
 		barPanel.add(ordersBtn);
 		
@@ -335,5 +367,34 @@ public class AdminPanel extends JFrame{
 				
 			}
 		});
+	}
+	private void checkOrders() {
+		Runnable r = new Runnable() {
+			public void run() {
+				boolean flag = true;	
+				while(flag){
+					try {
+						try {
+							pst = con.prepareStatement("SELECT COUNT(*) AS count FROM orders");
+							rs = pst.executeQuery();
+							if(rs.next()) {
+								if(count < rs.getInt(1)) {
+									int x = rs.getInt(1)-count;
+									notifyLabel.setText(Integer.toString(x));
+									notifyLabel.setVisible(true);
+								}
+							}
+						}catch(Exception e) {}
+						
+						Thread.sleep(1000);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+				}
+			}
+		};
+ 
+		Thread t = new Thread(r);
+		t.start();
 	}
 }

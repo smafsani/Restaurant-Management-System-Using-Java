@@ -4,10 +4,12 @@ import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.print.PrinterException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Date;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -52,6 +54,7 @@ public class ordersPanel {
 	private JScrollPane scrollPane;
 	private boolean flag = false;
 	private button btnBack, btnDeliver;
+	private button btnReceipt;
 	/**
 	 * Launch the application.
 	 */
@@ -170,6 +173,23 @@ public class ordersPanel {
 		allBtn.setFont(new Font("SansSerif", Font.BOLD, 14));
 		allBtn.setBorder(new MatteBorder(1,1,1,1, new Color(102, 51, 255)));
 		searchField.add(allBtn);
+		
+		JButton btnRefresh = new JButton("Refresh");
+		btnRefresh.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				model.setRowCount(0);
+				setTable();
+			}
+		});
+		btnRefresh.setHorizontalAlignment(SwingConstants.CENTER);
+		btnRefresh.setForeground(Color.WHITE);
+		btnRefresh.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+		btnRefresh.setFont(new Font("SansSerif", Font.BOLD, 14));
+		btnRefresh.setFocusPainted(false);
+		btnRefresh.setBorder(new MatteBorder(1,1,1,1, new Color(102, 51, 255)));
+		btnRefresh.setBackground(new Color(0, 133, 209));
+		btnRefresh.setBounds(531, 6, 69, 23);
+		searchField.add(btnRefresh);
 
 		scrollPane = new JScrollPane();
 		scrollPane.setBounds(5, 81, 680, 341);
@@ -259,6 +279,33 @@ public class ordersPanel {
 		btnDelete.setFont(new Font("SansSerif", Font.BOLD, 13));
 		btnDelete.setBounds(400, 425, 80, 25);
 		panel.add(btnDelete);
+		
+		btnReceipt = new button("Print Receipt",new Color(0, 205, 255),new Color(0, 86, 108));
+		btnReceipt.setBorder(new MatteBorder(1,1,1,1, new Color(102, 51, 255)));
+		btnReceipt.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+		btnReceipt.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mousePressed(MouseEvent e) {
+				btnReceipt.hover(new Color(0, 70, 88),new Color(0, 70, 88));
+			}
+			@Override
+			public void mouseReleased(MouseEvent e) {
+				btnReceipt.hover(new Color(0, 205, 255),new Color(0, 86, 108));
+			}
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				if(table.getSelectedRow() != -1) {
+					TableModel model2 = table.getModel();
+					int id = Integer.parseInt(model2.getValueAt(table.getSelectedRow(), 0).toString());
+					new deliverOrder(id).printReceipt();
+				}
+			}
+		});
+		btnReceipt.setForeground(Color.WHITE);
+		btnReceipt.setHorizontalAlignment(SwingConstants.CENTER);
+		btnReceipt.setFont(new Font("SansSerif", Font.BOLD, 13));
+		btnReceipt.setBounds(5, 425, 97, 25);
+		panel.add(btnReceipt);
 		
 		errorTextArea = new JTextArea();
 		errorTextArea.setVisible(false);
@@ -413,6 +460,8 @@ class deliverOrder{
 	private JTextField useridField, orderidField, nameField, mobileField;
 	private JTextArea itemArea, addressArea;
 	private JTextField ordertimeField;
+	private JScrollPane receiptAreaScroll;
+	private JTextArea receiptArea;
 	
 	
 	public deliverOrder(int oid) {
@@ -543,6 +592,16 @@ class deliverOrder{
 		ordertimeField.setBorder(new MatteBorder(1, 1, 1, 1, Color.BLACK));
 		panel.add(ordertimeField);
 		
+		receiptAreaScroll = new JScrollPane();
+		receiptAreaScroll.setBounds(358, 49, 322, 299);
+		receiptAreaScroll.setVisible(false);
+		panel.add(receiptAreaScroll);
+		
+		receiptArea = new JTextArea();
+		receiptAreaScroll.setViewportView(receiptArea);
+		receiptArea.setEditable(false);
+		receiptArea.setBorder(new MatteBorder(1, 1, 1, 1, (Color) new Color(0, 0, 0)));
+		receiptArea.setFont(new Font("SensSerif", Font.PLAIN, 12));
 		
 		fillFields();
 	
@@ -567,6 +626,76 @@ class deliverOrder{
 				JOptionPane.showMessageDialog(null, e);
 			}
 		}
+	}	
+	protected void printReceipt() {
+		String hisName="";
+		String hisMobile="";
+		String hisAddress="";
+		if(orderid != -1) {
+			try {
+				pst = con.prepareStatement("SELECT * FROM orders WHERE order_id=?");
+				pst.setInt(1, orderid);
+				rs = pst.executeQuery();
+				if(rs.next()) {
+					hisName = rs.getString(3);
+					hisMobile = rs.getString(4);
+					hisAddress = rs.getString(5);
+				}
+			} catch (SQLException e) {
+				JOptionPane.showMessageDialog(null, e);
+			}
+		}
+		if(!receiptArea.getText().contains("BILL RECEIPT"))
+		{
+			receiptAreaScroll.setVisible(true);
+			String str="";
+			str="***************************************************************\n";
+			str+="                                   BILL RECEIPT                                  \n";
+			str+="***************************************************************\n";
+			str+="Our Restaurant\n";
+			Date obj = new Date();
+			String date = obj.toString();
+			str+=date+"\nName(quantity)                                               Price\n\n";
+            
+			receiptArea.setText(str);
+			String itemsStr = itemArea.getText();
+			itemsStr = itemsStr.substring(0, itemsStr.length()-1);
+			String listOfItems[] = itemArea.getText().split(",");
+			int i=0, totalPrice=0;
+			for(String s:listOfItems) {
+				if(!s.equals(" ") || !s.equals("")) {
+					String ss[] = s.split("-");
+					try {
+						pst = con.prepareStatement("SELECT selling_price FROM products WHERE product_name=?");
+						pst.setString(1, ss[1]);
+						rs = pst.executeQuery();
+						if(rs.next()) {
+							i = rs.getInt(1);
+						}
+						totalPrice += i*Integer.parseInt(ss[0]);
+						String set = ss[1]+"("+ss[0]+")";
+						int len = ss[1].length()/12;
+						len = 3-len;
+						for(int j=0;j<len;j++) 
+							set+="\t";
+						set+=Integer.toString(i*Integer.parseInt(ss[0]))+"\n";
+						receiptArea.setText(receiptArea.getText()+set);
+					}catch(Exception ex) {
+						}
+					
+				}
+			}
+			receiptArea.setText(receiptArea.getText()+"\nTotal:\t\t\t"+totalPrice+"\n\n");
+			receiptArea.setText(receiptArea.getText()+"Name: "+hisName+"\n");
+			receiptArea.setText(receiptArea.getText()+"Mobile: "+hisMobile+"\n");
+			receiptArea.setText(receiptArea.getText()+"Address: "+hisAddress+"\n\n");
+			receiptArea.setText(receiptArea.getText()+"\t\tSignature\n");			
+			try {
+				receiptArea.print();
+			} catch (PrinterException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 	}
-	
 }

@@ -83,7 +83,7 @@ public class CustomerPanel extends JFrame{
 				foodOrder.setSize(x+10, y);
 				setButtons("fo");
 				
-				JPanel pan = new OrderFood(globalType).returnPanel();
+				JPanel pan = new OrderFoodCustomer(globalUsername, globalPassword).returnPanel();
 				pan.setBounds(10, 10, 690, 500);
 				clearContainerPanel();
 				containerPanel.add(pan);
